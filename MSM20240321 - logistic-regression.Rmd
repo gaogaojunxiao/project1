@@ -1,0 +1,1927 @@
+---
+title: 'An intervention to reduce discrimination, stigma, and sexual violence among men who have sex with men in South Africa; findings from a serial cross-sectional study'
+output: 
+  html_document:
+---
+
+# Input the datasets
+```{r}
+#install.packages("readxl")
+library(readxl)
+
+dat <- read.csv("/Users/junxiaogao/Documents/UCSF/MSM/Data 2024/dat4.csv")
+dat_0 <- read.csv("/Users/junxiaogao/Documents/UCSF/MSM/Data 2024/dat4_0.csv")
+dat_1 <- read.csv("/Users/junxiaogao/Documents/UCSF/MSM/Data 2024/dat4_1.csv")
+dat_2 <- read.csv("/Users/junxiaogao/Documents/UCSF/MSM/Data 2024/dat4_2.csv")
+CM3 <- read_xlsx("/Users/junxiaogao/Documents/UCSF/MSM/Outpon data/12 Month Follow up.xlsx")
+CM18 <- read_xlsx("/Users/junxiaogao/Documents/UCSF/MSM/Outpon data/18 Month Follow up.xlsx")
+CM <- read_xlsx("/Users/junxiaogao/Documents/UCSF/MSM/Outpon data/Baseline.xlsx")
+names(CM) <- tolower(names(CM))
+names(CM3) <- tolower(names(CM3))
+
+dat_2$netsize_group_2[dat_2$netsize_group == 2.20466595970308] <- 3
+dat_2$netsize_group[dat_2$netsize_group == 2.37741935483871] <- 3
+dat$netsize_group[dat$netsize_group == 2.20466595970308] <- 3
+dat$netsize[dat$netsize == 21.7370095440085] <- 23
+table(dat$netsize)
+# Assuming 'data' is your dataframe and 'vars' is a vector of variable names
+vars <- c("int2", "int2b", "int3", "int4a", "int4b", "int4c", "int5", "int6", "int7", "int8", "int9", "int10", "coregroupint", "int12", "int13")  # replace with your actual variable names
+
+# Calculate the number of missing values for each variable
+#missing_values <- sapply(data[vars], function(x) sum(is.na(x)))
+
+# Print the number of missing values for each variable
+#print(missing_values)
+
+table(dat$time, dat$sum_int, useNA = "always")
+
+library(dplyr)
+variables <- c("binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio",
+               "sum_int", "binary_int", "dempov", "female_partner", "male_partner",
+               "identity_report", "identity", "hiv_final", "sum_soccoh", "netsize",
+               "netsize_group")
+# Summarize the number of missing values across specified variables
+missing_summary <- dat %>%
+  summarise(across(all_of(variables), ~ sum(is.na(.))))
+
+# Print the summary
+print(missing_summary)
+table(dat$time, dat$binary_stigma)
+#delete "hivknowscore", "auditscore"
+```
+
+```{r}
+# hiv_final
+table(dat$hiv_final)
+dat$dat$hiv_final[is.na(dat$hiv_final)] <- 0
+dat_0$dat$hiv_final[is.na(dat_0$hiv_final)] <- 0
+dat_1$dat$hiv_final[is.na(dat_1$hiv_final)] <- 0
+dat_2$dat$hiv_final[is.na(dat_2$hiv_final)] <- 0
+
+# Correct variables
+# Discrimination
+dat$sexdvi7[is.na(dat$sexdvi7)] <- 0
+dat$sexdvi8[is.na(dat$sexdvi8)] <- 0
+dat$sexdvi9[is.na(dat$sexdvi9)] <- 0
+dat$sexdvi10[is.na(dat$sexdvi10)] <- 0
+dat$sexdvi11[is.na(dat$sexdvi11)] <- 0
+table(dat$sum_dvi)
+table(dat$binary_dvi)
+dat$sum_dvi <- dat$sum_dvi - dat$sexdvi7 - dat$sexdvi8 - dat$sexdvi9 - dat$sexdvi10 - dat$sexdvi11
+table(dat$sum_dvi)
+dat$sum_dvi <- ifelse(dat$sum_dvi > 0, 1, 0)
+table(dat$binary_dvi)
+
+dat_0$sexdvi7[is.na(dat_0$sexdvi7)] <- 0
+dat_0$sexdvi8[is.na(dat_0$sexdvi8)] <- 0
+dat_0$sexdvi9[is.na(dat_0$sexdvi9)] <- 0
+dat_0$sexdvi10[is.na(dat_0$sexdvi10)] <- 0
+dat_0$sexdvi11[is.na(dat_0$sexdvi11)] <- 0
+table(dat_0$sum_dvi)
+table(dat_0$binary_dvi)
+dat_0$sum_dvi <- dat_0$sum_dvi - dat_0$sexdvi7 - dat_0$sexdvi8 - dat_0$sexdvi9 - dat_0$sexdvi10 - dat_0$sexdvi11
+table(dat_0$sum_dvi)
+dat_0$sum_dvi <- ifelse(dat_0$sum_dvi > 0, 1, 0)
+table(dat_0$binary_dvi)
+
+dat_1$sexdvi7[is.na(dat_1$sexdvi7)] <- 0
+dat_1$sexdvi8[is.na(dat_1$sexdvi8)] <- 0
+dat_1$sexdvi9[is.na(dat_1$sexdvi9)] <- 0
+dat_1$sexdvi10[is.na(dat_1$sexdvi10)] <- 0
+dat_1$sexdvi11[is.na(dat_1$sexdvi11)] <- 0
+table(dat_1$sum_dvi)
+table(dat_1$binary_dvi)
+dat_1$sum_dvi <- dat_1$sum_dvi - dat_1$sexdvi7 - dat_1$sexdvi8 - dat_1$sexdvi9 - dat_1$sexdvi10 - dat_1$sexdvi11
+table(dat_1$sum_dvi)
+dat_1$sum_dvi <- ifelse(dat_1$sum_dvi > 0, 1, 0)
+table(dat_1$binary_dvi)
+
+dat_2$sexdvi7[is.na(dat_2$sexdvi7)] <- 0
+dat_2$sexdvi8[is.na(dat_2$sexdvi8)] <- 0
+dat_2$sexdvi9[is.na(dat_2$sexdvi9)] <- 0
+dat_2$sexdvi10[is.na(dat_2$sexdvi10)] <- 0
+dat_2$sexdvi11[is.na(dat_2$sexdvi11)] <- 0
+table(dat_2$sum_dvi)
+table(dat_2$binary_dvi)
+dat_2$sum_dvi <- dat_2$sum_dvi - dat_2$sexdvi7 - dat_2$sexdvi8 - dat_2$sexdvi9 - dat_2$sexdvi10 - dat_2$sexdvi11
+dat_2$sum_dvi <- ifelse(dat_2$sum_dvi > 0, 1, 0)
+table(dat_2$sum_dvi)
+table(dat_2$binary_dvi)
+
+# Sexual Violence
+dat$sexabv2[is.na(dat$sexabv2)] <- 0
+dat$sexabv4[is.na(dat$sexabv4)] <- 0
+dat$sexabv6[is.na(dat$sexabv6)] <- 0
+dat$sexabv7[is.na(dat$sexabv7)] <- 0
+dat$sexabv8[is.na(dat$sexabv8)] <- 0
+dat$sexabv9[is.na(dat$sexabv9)] <- 0
+dat$sexual_vio <- dat$sexual_vio - dat$sexabv2 - dat$sexabv4 -  dat$sexabv6 - dat$sexabv7 - dat$sexabv8 - dat$sexabv9
+table(dat$sexual_vio)
+table(dat$binary_sexual_vio)
+dat$binary_sexual_vio <- ifelse(dat$sexual_vio > 0, 1, 0)
+table(dat$binary_sexual_vio)
+
+dat_0$sexabv2[is.na(dat_0$sexabv2)] <- 0
+dat_0$sexabv4[is.na(dat_0$sexabv4)] <- 0
+dat_0$sexabv6[is.na(dat_0$sexabv6)] <- 0
+dat_0$sexabv7[is.na(dat_0$sexabv7)] <- 0
+dat_0$sexabv8[is.na(dat_0$sexabv8)] <- 0
+dat_0$sexabv9[is.na(dat_0$sexabv9)] <- 0
+dat_0$sexual_vio <- dat_0$sexual_vio - dat_0$sexabv2 - dat_0$sexabv4 -  dat_0$sexabv6 - dat_0$sexabv7 - dat_0$sexabv8 - dat_0$sexabv9
+table(dat_0$sexual_vio)
+table(dat_0$binary_sexual_vio)
+dat_0$binary_sexual_vio <- ifelse(dat_0$sexual_vio > 0, 1, 0)
+table(dat_0$binary_sexual_vio)
+
+dat_1$sexabv2[is.na(dat_1$sexabv2)] <- 0
+dat_1$sexabv4[is.na(dat_1$sexabv4)] <- 0
+dat_1$sexabv6[is.na(dat_1$sexabv6)] <- 0
+dat_1$sexabv7[is.na(dat_1$sexabv7)] <- 0
+dat_1$sexabv8[is.na(dat_1$sexabv8)] <- 0
+dat_1$sexabv9[is.na(dat_1$sexabv9)] <- 0
+dat_1$sexual_vio <- dat_1$sexual_vio - dat_1$sexabv2 - dat_1$sexabv4 -  dat_1$sexabv6 - dat_1$sexabv7 - dat_1$sexabv8 - dat_1$sexabv9
+table(dat_1$sexual_vio)
+table(dat_1$binary_sexual_vio)
+dat_1$binary_sexual_vio <- ifelse(dat_1$sexual_vio > 0, 1, 0)
+table(dat_1$binary_sexual_vio)
+
+dat_2$sexabv2[is.na(dat_2$sexabv2)] <- 0
+dat_2$sexabv4[is.na(dat_2$sexabv4)] <- 0
+dat_2$sexabv6[is.na(dat_2$sexabv6)] <- 0
+dat_2$sexabv7[is.na(dat_2$sexabv7)] <- 0
+dat_2$sexabv8[is.na(dat_2$sexabv8)] <- 0
+dat_2$sexabv9[is.na(dat_2$sexabv9)] <- 0
+dat_2$sexual_vio <- dat_2$sexual_vio - dat_2$sexabv2 - dat_2$sexabv4 -  dat_2$sexabv6 - dat_2$sexabv7 - dat_2$sexabv8 - dat_2$sexabv9
+table(dat_2$sexual_vio)
+table(dat_2$binary_sexual_vio)
+dat_2$binary_sexual_vio <- ifelse(dat_2$sexual_vio > 0, 1, 0)
+table(dat_2$binary_sexual_vio)
+
+# recode "Highest Education Attained", 1 = Primary/Secondary (High School), 2 = Matric/Tertiary (Technikon)/University/Post-graduate, missing = mojority 
+
+dat$demedu2[dat$demedu2 == 9] <- 1
+dat$demedu2[dat$demedu2 == 2] <- 1
+dat$demedu2[dat$demedu2 == 3] <- 2
+dat$demedu2[dat$demedu2 == 4] <- 2
+dat$demedu2[dat$demedu2 == 5] <- 2
+dat$demedu2[dat$demedu2 == 6] <- 2
+dat$demedu2[is.na(dat$demedu2)] <- 1
+
+dat_0$demedu2[dat_0$demedu2 == 9] <- 1
+dat_0$demedu2[dat_0$demedu2 == 2] <- 1
+dat_0$demedu2[dat_0$demedu2 == 3] <- 2
+dat_0$demedu2[dat_0$demedu2 == 4] <- 2
+dat_0$demedu2[dat_0$demedu2 == 5] <- 2
+dat_0$demedu2[dat_0$demedu2 == 6] <- 2
+dat_0$demedu2[is.na(dat_0$demedu2)] <- 1
+
+dat_1$demedu2[dat_1$demedu2 == 9] <- 1
+dat_1$demedu2[dat_1$demedu2 == 2] <- 1
+dat_1$demedu2[dat_1$demedu2 == 3] <- 2
+dat_1$demedu2[dat_1$demedu2 == 4] <- 2
+dat_1$demedu2[dat_1$demedu2 == 5] <- 2
+dat_1$demedu2[dat_1$demedu2 == 6] <- 2
+dat_1$demedu2[is.na(dat_1$demedu2)] <- 1
+
+dat_2$demedu2[dat_2$demedu2 == 9] <- 1
+dat_2$demedu2[dat_2$demedu2 == 2] <- 1
+dat_2$demedu2[dat_2$demedu2 == 3] <- 2
+dat_2$demedu2[dat_2$demedu2 == 4] <- 2
+dat_2$demedu2[dat_2$demedu2 == 5] <- 2
+dat_2$demedu2[dat_2$demedu2 == 6] <- 2
+dat_2$demedu2[is.na(dat_2$demedu2)] <- 1
+
+# use identity instead of identity_report
+table(dat_2$identity)
+
+# dempov
+dat$dempov[dat$dempov == 1] <- 0
+dat$dempov[dat$dempov == 2] <- 1
+dat$dempov[dat$dempov == 3] <- 1
+dat$dempov[dat$dempov == 4] <- 1
+
+dat_0$dempov[dat_0$dempov == 1] <- 0
+dat_0$dempov[dat_0$dempov == 2] <- 1
+dat_0$dempov[dat_0$dempov == 3] <- 1
+dat_0$dempov[dat_0$dempov == 4] <- 1
+
+dat_1$dempov[dat_1$dempov == 1] <- 0
+dat_1$dempov[dat_1$dempov == 2] <- 1
+dat_1$dempov[dat_1$dempov == 3] <- 1
+dat_1$dempov[dat_1$dempov == 4] <- 1
+
+dat_2$dempov[dat_2$dempov == 1] <- 0
+dat_2$dempov[dat_2$dempov == 2] <- 1
+dat_2$dempov[dat_2$dempov == 3] <- 1
+dat_2$dempov[dat_2$dempov == 4] <- 1
+table(dat$dempov)
+
+# use as.factor for categorical variables
+dat$agegroup <- as.factor(dat$agegroup)
+dat$identity_report <- as.factor(dat$identity_report)
+dat$identity <- as.factor(dat$identity)
+dat$dempov <- as.factor(dat$dempov)
+dat$netsize_group <- as.factor(dat$netsize_group)
+dat$sum_int <- as.factor(dat$sum_int)
+dat$demedu2 <- as.factor(dat$demedu2)
+dat$hiv_final <- as.factor(dat$hiv_final)
+
+dat_0$agegroup <- as.factor(dat_0$agegroup)
+dat_0$identity_report <- as.factor(dat_0$identity_report)
+dat_0$identity <- as.factor(dat_0$identity)
+dat_0$dempov <- as.factor(dat_0$dempov)
+dat_0$netsize_group <- as.factor(dat_0$netsize_group)
+dat_0$demedu2 <- as.factor(dat_0$demedu2)
+dat_0$hiv_final <- as.factor(dat_0$hiv_final)
+
+dat_1$agegroup <- as.factor(dat_1$agegroup)
+dat_1$identity_report <- as.factor(dat_1$identity_report)
+dat_1$identity <- as.factor(dat_1$identity)
+dat_1$dempov <- as.factor(dat_1$dempov)
+dat_1$netsize_group <- as.factor(dat_1$netsize_group)
+dat_1$demedu2 <- as.factor(dat_1$demedu2)
+dat_1$hiv_final <- as.factor(dat_1$hiv_final)
+
+dat_2$agegroup <- as.factor(dat_2$agegroup)
+dat_2$identity_report <- as.factor(dat_2$identity_report)
+dat_2$identity <- as.factor(dat_2$identity)
+dat_2$dempov <- as.factor(dat_2$dempov)
+dat_2$netsize_group <- as.factor(dat_2$netsize_group)
+dat_2$demedu2 <- as.factor(dat_2$demedu2)
+dat_2$hiv_final <- as.factor(dat_2$hiv_final)
+```
+
+# Table 1
+
+```{r}
+#install.packages("tableone")
+library(tableone)
+
+# Categorical variable conversion
+## Vector of variables to summarize
+myVars <- c("agegroup", "demedu2", "dempov", "sum_int", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "sum_soccoh", "netsize", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+
+# delete age, "demjob"
+## Vector of categorical variables that need transformation
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner",  "identity_report", "identity", "hiv_final", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+
+# Loop through each variable and create a table
+for (var in catVars) {
+  # Convert numeric values to factor levels with labels
+  cat_table <- table(factor(dat[[var]], levels = unique(dat[[var]]), labels = levels(factor(dat[[var]]))))
+  # Print variable name
+  cat("\nVariable:", var, "\n")
+  # Print table
+  print(cat_table)
+}
+
+myVars_3 <- myVars
+catVars_3 <- catVars
+myVars_18 <- myVars
+catVars_18 <- catVars
+```
+
+## Tabel 1: Demographic Indicators at baseline
+
+```{r}
+## Create a TableOne object
+#install.packages("dplyr")
+library(dplyr)
+#install.packages("fansi", repos = "https://cloud.r-project.org/")
+library(fansi)
+
+# the CreateTableOne function by default uses the chi-squared test for categorical variables when the sample size is sufficient and Fisher's exact test when the sample size is small or when there are zero counts. For continuous variables, it typically uses the t-test by default or the non-parametric Wilcoxon rank-sum test if specified by the user.
+
+# The exact parameter in the print function call (exact = "stage") likely indicates that Fisher's exact test is being requested for the categorical variables with small sample sizes or when there are cells with expected frequencies less than 5.
+
+tab1_0 <- CreateTableOne(vars = myVars, data = dat_0, factorVars = catVars)
+tab1_0
+# Showing all levels for categorical variables
+print(tab1_0, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+
+# Detailed information including missingness
+summary(tab1_0)
+
+tab1_1 <- CreateTableOne(vars = myVars, data = dat_1, factorVars = catVars)
+tab1_1
+print(tab1_1, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+summary(tab1_1)
+
+tab1_2 <- CreateTableOne(vars = myVars, data = dat_2, factorVars = catVars)
+tab1_2
+print(tab1_2, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+summary(tab1_2)
+
+# Summarizing nonnormal variables
+#biomarkers <- c("bili","chol","copper","alk.phos","ast","trig","protime")
+#print(tab2, nonnormal = biomarkers, formatOptions = list(big.mark = ","))
+```
+
+## Tabel 2 for Stigma
+
+```{r}
+# Categorical variable conversion
+## Vector of variables to summarize
+myVars <- c("agegroup", "demedu2", "dempov", "sum_int", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "sum_soccoh", "netsize", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+
+# delete age, "demjob"
+## Vector of categorical variables that need transformation
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner",  "identity_report", "identity", "hiv_final", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+
+tab2_stigma_0 <- CreateTableOne(vars = myVars, strata = "binary_stigma" , data = dat_0, factorVars = catVars)
+print(tab2_stigma_0, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+print(tab2_stigma_0, showAllLevels = TRUE, exact = "stage", smd = TRUE)
+
+tab2_stigma_1 <- CreateTableOne(vars = myVars, strata = "binary_stigma" , data = dat_1, factorVars = catVars)
+print(tab2_stigma_1, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+print(tab2_stigma_1, showAllLevels = TRUE, exact = "stage", smd = TRUE)
+
+tab2_stigma_2 <- CreateTableOne(vars = myVars, strata = "binary_stigma" , data = dat_2, factorVars = catVars)
+print(tab2_stigma_2, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+print(tab2_stigma_2, showAllLevels = TRUE, exact = "stage", smd = TRUE)
+```
+
+## Tabel 2 for Discrimination
+
+```{r}
+# Table 2 for discrimination
+tab2_dvi_0 <- CreateTableOne(vars = myVars, strata = "binary_dvi" , data = dat_0, factorVars = catVars)
+print(tab2_dvi_0, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+print(tab2_dvi_0, showAllLevels = TRUE, exact = "stage", smd = TRUE)
+
+tab2_dvi_1 <- CreateTableOne(vars = myVars, strata = "binary_dvi" , data = dat_1, factorVars = catVars)
+print(tab2_dvi_1, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+print(tab2_dvi_1, showAllLevels = TRUE, exact = "stage", smd = TRUE)
+
+table(dat$time, dat$binary_dvi)
+tab2_dvi_2 <- CreateTableOne(vars = myVars, strata = "binary_dvi" , data = dat_2, factorVars = catVars)
+print(tab2_dvi_2, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+print(tab2_dvi_2, showAllLevels = TRUE, exact = "stage", smd = TRUE)
+```
+
+## Tabel 2 for Sexual violence
+
+```{r}
+tab2_vio_0 <- CreateTableOne(vars = myVars, strata = "binary_sexual_vio" , data = dat_0, factorVars = catVars)
+print(tab2_vio_0, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+print(tab2_vio_0, showAllLevels = TRUE, exact = "stage", smd = TRUE)
+
+tab2_vio_1 <- CreateTableOne(vars = myVars, strata = "binary_sexual_vio" , data = dat_1, factorVars = catVars)
+print(tab2_vio_1, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+print(tab2_vio_1, showAllLevels = TRUE, exact = "stage", smd = TRUE)
+
+tab2_vio_2 <- CreateTableOne(vars = myVars, strata = "binary_sexual_vio" , data = dat_2, factorVars = catVars)
+print(tab2_vio_2, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
+print(tab2_vio_2, showAllLevels = TRUE, exact = "stage", smd = TRUE)
+```
+
+## Tests of trend for table 2
+
+```{r}
+dat$time <- as.factor(dat$time)
+dat$dempov <- as.factor(dat$dempov)
+dat$identity_report <- as.factor(dat$identity_report)
+
+# Stigma
+outcome <- dat$binary_stigma
+# Assuming 'dat' contains your dataset with 'outcome' and 'time' among other variables
+
+# Vector of categorical variables for subsetting
+catVars <- c("agegroup", "binary_int", "female_partner", "male_partner",
+             "identity", "netsize_group", "binary_stigma", 
+             "binary_dvi", "binary_physical_vio", "binary_sexual_vio", "dempov")
+#delete: "hiv_final"  "demedu2"
+#View(dat$identity_report)
+#delete "dempov", "identity_report", , "sum_int"
+# Check for missing values in the 'time' variable
+if(any(is.na(dat$time))) {
+  cat("Missing values found in 'time'. Consider handling missing data.\n")
+}
+
+# Assuming 'dat' contains 'time' and 'outcome' is defined as dat$binary_stigma
+# Assuming 'dat' contains 'time', 'outcome' is defined as dat$binary_stigma, and 'catVars' is your vector of categorical variables
+
+for (var in catVars) {
+  cat("\n### Logistic Regression for Variable:", var, "###\n")
+  
+  # Extract the levels for the current categorical variable
+  levels_var <- unique(dat[[var]])
+  
+  # Loop through each level of the current categorical variable
+  for (level in levels_var) {
+    # Prepare a statement to indicate the subgroup being analyzed
+    subgroup_statement <- paste("\n-- Subgroup:", var, "=", level, "--\n")
+    cat(subgroup_statement)
+    
+    # Subset the data for the current level
+    # Ensure both 'outcome' and 'time' variables are present and not NA
+    subset_dat <- dat[dat[[var]] == level & !is.na(dat$time) & !is.na(dat$binary_stigma), ]
+    
+    # Check if the subset is not empty
+    if (nrow(subset_dat) > 0) {
+      # Run logistic regression model for the subset
+      logistic_model <- glm(binary_stigma ~ time, data = subset_dat, family = "binomial")
+      
+      # Print summary of the model
+      print(summary(logistic_model))
+    } else {
+      cat("No data available for this subgroup or missing 'time'.\n")
+    }
+  }
+}
+
+logistic_model <- glm(binary_stigma ~ time, data = dat, family = "binomial")
+print(summary(logistic_model))
+
+subset_data <- dat[!is.na(dat$hiv_final), ]
+subset_dat <- subset_data[subset_data$hiv_final == 1, ]
+logistic_model <- glm(binary_stigma ~ time, data = subset_dat, family = "binomial")
+print(summary(logistic_model))
+subset_dat <- subset_data[subset_data$hiv_final == 0, ]
+logistic_model <- glm(binary_stigma ~ time, data = subset_dat, family = "binomial")
+print(summary(logistic_model))
+
+# Discrimination
+outcome <- dat$binary_dvi
+
+for (var in catVars) {
+  cat("\n### Logistic Regression for Variable:", var, "###\n")
+  
+  # Extract the levels for the current categorical variable
+  levels_var <- unique(dat[[var]])
+  
+  # Loop through each level of the current categorical variable
+  for (level in levels_var) {
+    # Prepare a statement to indicate the subgroup being analyzed
+    subgroup_statement <- paste("\n-- Subgroup:", var, "=", level, "--\n")
+    cat(subgroup_statement)
+    
+    # Subset the data for the current level
+    # Ensure both 'outcome' and 'time' variables are present and not NA
+    subset_dat <- dat[dat[[var]] == level & !is.na(dat$time) & !is.na(dat$binary_dvi), ]
+    
+    # Check if the subset is not empty
+    if (nrow(subset_dat) > 0) {
+      # Run logistic regression model for the subset
+      logistic_model <- glm(binary_dvi ~ time, data = subset_dat, family = "binomial")
+      
+      # Print summary of the model
+      print(summary(logistic_model))
+    } else {
+      cat("No data available for this subgroup or missing 'time'.\n")
+    }
+  }
+}
+
+subset_data <- dat[!is.na(dat$hiv_final), ]
+subset_dat <- subset_data[subset_data$hiv_final == 1, ]
+logistic_model <- glm(binary_dvi ~ time, data = subset_dat, family = "binomial")
+print(summary(logistic_model))
+subset_dat <- subset_data[subset_data$hiv_final == 0, ]
+logistic_model <- glm(binary_dvi ~ time, data = subset_dat, family = "binomial")
+print(summary(logistic_model))
+
+# Sexual violence
+outcome <- dat$binary_sexual_vio
+
+for (var in catVars) {
+  cat("\n### Logistic Regression for Variable:", var, "###\n")
+  
+  # Extract the levels for the current categorical variable
+  levels_var <- unique(dat[[var]])
+  
+  # Loop through each level of the current categorical variable
+  for (level in levels_var) {
+    # Prepare a statement to indicate the subgroup being analyzed
+    subgroup_statement <- paste("\n-- Subgroup:", var, "=", level, "--\n")
+    cat(subgroup_statement)
+    
+    # Subset the data for the current level
+    # Ensure both 'outcome' and 'time' variables are present and not NA
+    subset_dat <- dat[dat[[var]] == level & !is.na(dat$time) & !is.na(dat$binary_sexual_vio), ]
+    
+    # Check if the subset is not empty
+    if (nrow(subset_dat) > 0) {
+      # Run logistic regression model for the subset
+      logistic_model <- glm(binary_sexual_vio ~ time, data = subset_dat, family = "binomial")
+      
+      # Print summary of the model
+      print(summary(logistic_model))
+    } else {
+      cat("No data available for this subgroup or missing 'time'.\n")
+    }
+  }
+}
+
+subset_data <- dat[!is.na(dat$hiv_final), ]
+subset_dat <- subset_data[subset_data$hiv_final == 1, ]
+logistic_model <- glm(binary_sexual_vio ~ time, data = subset_dat, family = "binomial")
+print(summary(logistic_model))
+subset_dat <- subset_data[subset_data$hiv_final == 0, ]
+logistic_model <- glm(binary_sexual_vio ~ time, data = subset_dat, family = "binomial")
+print(summary(logistic_model))
+```
+
+# Tabel for Outcomes
+
+```{r}
+calculate_frequency_and_percentage <- function(data, variable_name) {
+  # Calculate frequency
+  freq <- table(data[[variable_name]])
+  print(paste("Frequency for", variable_name, ":"))
+  print(freq)
+  
+  # Calculate percentage
+  perc <- prop.table(freq) * 100
+  print(paste("Percentage for", variable_name, ":"))
+  print(perc)
+}
+
+# List of variables
+variables <- c("binary_stigma", "binary_dvi", "binary_vio", "binary_physical_vio", "binary_sexual_vio")
+
+# Apply the function to each variable in each data frame
+for (var in variables) {
+  cat("\nData Frame dat_0\n")
+  calculate_frequency_and_percentage(dat_0, var)
+  
+  cat("\nData Frame dat_1\n")
+  calculate_frequency_and_percentage(dat_1, var)
+  
+  cat("\nData Frame dat_2\n")
+  calculate_frequency_and_percentage(dat_2, var)
+}
+
+# Function to fit GLM and summarize
+fit_and_summarize_glm <- function(data, response_var) {
+  formula <- as.formula(paste(response_var, "~ time"))
+  glm_model <- glm(formula, family = "binomial", data = data)
+  print(summary(glm_model))
+}
+
+# List of binary variables
+binary_vars <- c("binary_stigma", "binary_dvi", "binary_sexual_vio")
+
+# Apply the function to each binary variable
+for (var in binary_vars) {
+  cat("\nGLM for", var, "\n")
+  fit_and_summarize_glm(dat, var)
+}
+```
+
+# RDS Analysis - baseline
+## RDS Analysis - baseline tabele1
+```{r}
+# For baseline table 1
+dat4_2 <- dat_0
+##First step is to make sure all the data are complete for transferring to an RDS dataframe
+##Netsize7: We need this complete
+summary(dat4_2$netsize)
+#one missing netsize that we need to make not missing
+dat4_2$ns_18<-dat4_2$netsize
+dat4_2$ns_18[is.na(dat4_2$netsize)]<-18.97
+dat4_2$ns_18[dat4_2$netsize==0]<-1
+summary(dat4_2$ns_18)
+#Make sure all the coupons are there
+summary(dat4_2$couponid)
+#We are missing data from coupons so we need to merge that new data. 
+#18 month has an incorrect name for couponID. renaming to match merge file
+dat4_2$i<-1:nrow(dat4_2)
+dat4_18<-merge(dat4_2, CM, by="couponid", all=TRUE)
+#View(dat4_18)
+
+#download all RDS packages
+
+#install.packages("RDS") 
+#install.packages("sspse")
+#install.packages("mcmcplots")
+#install.packages("coda")
+
+library("coda")
+library("RDS") 
+library("sspse")
+library("mcmcplots")
+
+RDS<-dat4_18
+RDS$rec.id <- rid.from.coupons(dat4_18, subject.id='i', subject.coupon='couponid', coupon.variables=c("outpon1","outpon2","outpon3"))
+#View(RDS[c("i","rec.id","couponid","outpon1","outpon2","outpon3")])
+#NEED TO UPDATE PSE with lower and upper bounds. 
+RDS <- RDS[!is.na(RDS$i), ]
+D_RDS <- as.rds.data.frame(RDS, id='i', recruiter.id='rec.id'
+                           , network.size='ns_18', population.size=c(4883), max.coupons=3
+                           , notes=NULL)
+#View(D_RDS)
+
+##RDS specific variables
+D_RDS$seed <- get.seed.id(D_RDS)
+D_RDS$wave <- get.wave(D_RDS)
+D_RDS$target <- get.id(D_RDS)
+D_RDS$source <- get.rid(D_RDS)
+
+#Pretty recruitment by wave plot!
+plot(D_RDS, plot.type='Recruits by wave',stratify.by='age_grp2_18')
+
+#Recruitment tree
+
+D_RDS$seedYN<-0
+D_RDS$seedYN[which(D_RDS$rec.id=="seed")]<-1
+reingold.tilford.plot(D_RDS,vertex.color="seedYN",vertex.size="ns_18",show.legend=FALSE)
+legend("left",legend=c("Seed","Others"),fill=c("lightblue","red"))
+
+#Example of weighted estimates for table 1. NOTE NEED TO CHANGE PSE
+
+agegrp <- RDS.bootstrap.intervals(D_RDS, outcome.variable="agegroup", 
+                                   weight.type="Gile's SS", 
+                                   confidence.level=0.95, number.of.bootstrap.samples=5000, 
+                                   to.factor=TRUE, N=4883, number.ss.samples.per.iteration=1000)
+
+#print(agegrp) # RDS-adjusted % and 95%CI
+
+#STEP 1: ADD OUTPON DATA FROM NEW DATASETS FOR BASELINE AND 12 MONTH
+#STEP 2: Assure all data are complete (netsize variable use netsize7)
+#STEP 3: I would split the file into 3 based on wave
+#STEP 3b: Run all crude analysis first. 
+#STEP 4: Build RDS dataframe for each
+#STEP 5: Run table 1 analysis weighted
+
+## Load survey package, so you can make a table for RDS-weighted results
+#install.packages("survey")
+library(survey)
+D_RDS$wghtGSS<-compute.weights(D_RDS, weight.type = c("Gile's SS"), N = 4883)
+
+# set the survey to account for weights
+RDSsvy <- svydesign(ids = ~ i, weights = ~ wghtGSS, nest = TRUE, data = D_RDS)
+ 
+calculate_and_print_RDS_bootstrap_intervals <- function(data, variables, N, weight_type = "Gile's SS", confidence_level = 0.95, number_of_bootstrap_samples = 5000, number_ss_samples_per_iteration = 1000) {
+  for (variable in variables) {
+    cat("Processing variable:", variable, "\n")
+    result <- RDS.bootstrap.intervals(data, outcome.variable = variable, 
+                                      weight.type = weight_type, 
+                                      confidence.level = confidence_level, 
+                                      number.of.bootstrap.samples = number_of_bootstrap_samples, 
+                                      to.factor = TRUE, N = N, 
+                                      number.ss.samples.per.iteration = number_ss_samples_per_iteration)
+    print(result)
+    cat("\n") # Add a newline for better readability between variables
+  }
+}
+
+variables <- c("agegroup", "binary_int", "demedu2", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio", "dempov", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group")
+
+calculate_and_print_RDS_bootstrap_intervals(D_RDS, variables, N = 4883)
+
+#numerical variables
+bootstrap_CI_with_N <- function(data, var_name, N, stat = "mean", num_samples = 5000, conf_level = 0.95) {
+  # Extract the variable of interest
+  var_data <- data[[var_name]]
+  
+  # Define a function to compute the desired statistic
+  stat_fun <- switch(stat,
+                     mean = mean,
+                     median = median,
+                     sum = sum,
+                     mean) # Default to mean if unrecognized stat
+  
+  # Generate bootstrap samples and compute the statistic for each sample
+  bootstrap_stats <- replicate(num_samples, {
+    sampled_indices <- sample(1:length(var_data), replace = TRUE, size = length(var_data))
+    stat_fun(var_data[sampled_indices], na.rm = TRUE)
+  })
+  
+  # Compute the confidence interval
+  CI_bounds <- quantile(bootstrap_stats, probs = c((1 - conf_level) / 2, 1 - (1 - conf_level) / 2))
+  
+  # Calculate the overall mean of the bootstrap statistics
+  overall_mean <- mean(bootstrap_stats)
+  
+  # Print the mean and confidence interval
+  cat("Mean:", overall_mean, "\n")
+  cat("95% Confidence Interval:", CI_bounds, "\n")
+  
+  # Return the mean and confidence interval
+  return(list(mean = overall_mean, CI = CI_bounds))
+}
+
+set.seed(123) # For reproducibility
+CI_mean_sum_int <- bootstrap_CI_with_N(D_RDS, "sum_soccoh", N = 4883, stat = "mean", num_samples = 5000)
+CI_mean_sum_int <- bootstrap_CI_with_N(D_RDS, "netsize", N = 4883, stat = "mean", num_samples = 5000)
+CI_mean_sum_int <- bootstrap_CI_with_N(D_RDS, "sum_int", N = 4883, stat = "mean", num_samples = 5000)
+```
+
+## RDS Analysis - baseline table2 - Stigma
+```{r}
+# For baseline table2 - Stigma
+# one way to report the % of outcome in each group of another variable is to switch rows and column
+# the p-value that is reported is the one from chi-square test. 
+HIVbyAgeGrwght <- svyCreateTableOne(vars = "binary_stigma", strata="agegroup", data = RDSsvy, addOverall=TRUE)
+print(HIVbyAgeGrwght, showAllLevels = TRUE)
+
+# show the results overall and by subgroups (point + 95%CI)
+svyciprop(~I(binary_stigma=="binary_stigma Pos."), RDSsvy, method="logit") # proportions for any variables
+svyciprop(~I(binary_stigma=="binary_stigma Neg."), RDSsvy, method="logit") # proportions for any variables
+svymean(~binary_stigma, RDSsvy) # mean for any variable, proportions for only binary outcome
+confint(svymean(~binary_stigma, RDSsvy)) # mean for any variable, proportions for only binary outcome
+
+# Use agegroup for example
+svyby(~binary_stigma,~factor(agegroup), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+summary(svytable(~binary_stigma+agegroup, RDSsvy)) # test for differences in proportions of categorical variables
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+library(survey)
+
+# RDSsvy is your survey design object
+
+library(survey)
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "female_partner", "male_partner",  
+             "identity_report", "identity", "hiv_final", "netsize_group", "binary_stigma", "binary_dvi", 
+             "binary_physical_vio", "binary_sexual_vio")
+#delete binary_int
+
+# Loop through each categorical variable and calculate proportions and confidence intervals
+for (var in catVars) {
+  cat("Proportions for binary_stigma by", var, ":\n")
+  
+  # Using svyby to calculate proportions by subgroup
+  prop_by_subgroup <- svyby(~binary_stigma, as.formula(paste("~factor(", var, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype = c("ci"))
+  test_for_differences_by_subgroup <- summary(svytable(as.formula(paste("~binary_stigma + ", var)), RDSsvy))
+  
+  # Print the results
+  print(prop_by_subgroup)
+  print(test_for_differences_by_subgroup)
+  cat("\n") # For readability
+}
+
+# For numerical variables
+numVars <- c("sum_int", "sum_soccoh", "netsize")  # Example numerical variables
+
+# Example categorical variable to subgroup the numerical variables
+catVar <- "binary_stigma"  # Example categorical variable
+
+for (var in numVars) {
+  cat("Statistics for", var, "by", catVar, ":\n")
+  
+  # Calculate mean and confidence intervals across subgroups of the categorical variable
+  mean_by_subgroup <- svyby(as.formula(paste("~", var)), as.formula(paste("~factor(", catVar, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype="ci")
+  
+  # Print the results directly
+  cat("Variable:", var, "\n")
+  print(mean_by_subgroup)
+  
+  cat("\n")  # Add a blank line for readability
+}
+```
+
+## RDS Analysis - baseline table2 - Discrimination
+```{r}
+# For baseline table 2 – discrimination
+# one way to report the % of outcome in each group of another variable is to switch rows and column
+# the p-value that is reported is the one from chi-square test. 
+HIVbyAgeGrwght <- svyCreateTableOne(vars = "binary_dvi", strata="agegroup", data = RDSsvy, addOverall=TRUE)
+print(HIVbyAgeGrwght, showAllLevels = TRUE)
+
+# show the results overall and by subgroups (point + 95%CI)
+svyciprop(~I(binary_dvi=="binary_dvi Pos."), RDSsvy, method="logit") # proportions for any variables
+svyciprop(~I(binary_dvi=="binary_dvi Neg."), RDSsvy, method="logit") # proportions for any variables
+svymean(~binary_dvi, RDSsvy) # mean for any variable, proportions for only binary outcome
+confint(svymean(~binary_dvi, RDSsvy)) # mean for any variable, proportions for only binary outcome
+
+# Use agegroup for example
+svyby(~binary_dvi,~factor(agegroup), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+summary(svytable(~binary_dvi+agegroup, RDSsvy)) # test for differences in proportions of categorical variables
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+library(survey)
+
+# RDSsvy is your survey design object
+
+library(survey)
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "female_partner", "male_partner",  
+             "identity_report", "identity", "hiv_final", "netsize_group", "binary_dvi", "binary_stigma", 
+             "binary_physical_vio", "binary_sexual_vio")
+#delete binary_int
+
+# Loop through each categorical variable and calculate proportions and confidence intervals
+for (var in catVars) {
+  cat("Proportions for binary_dvi by", var, ":\n")
+  
+  # Using svyby to calculate proportions by subgroup
+  prop_by_subgroup <- svyby(~binary_dvi, as.formula(paste("~factor(", var, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype = c("ci"))
+  test_for_differences_by_subgroup <- summary(svytable(as.formula(paste("~binary_dvi + ", var)), RDSsvy))
+  
+  # Print the results
+  print(prop_by_subgroup)
+  print(test_for_differences_by_subgroup)
+  cat("\n") # For readability
+}
+
+# For numerical variables
+numVars <- c("sum_int", "sum_soccoh", "netsize")  # Example numerical variables
+
+# Example categorical variable to subgroup the numerical variables
+catVar <- "binary_dvi"  # Example categorical variable
+
+for (var in numVars) {
+  cat("Statistics for", var, "by", catVar, ":\n")
+  
+  # Calculate mean and confidence intervals across subgroups of the categorical variable
+  mean_by_subgroup <- svyby(as.formula(paste("~", var)), as.formula(paste("~factor(", catVar, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype="ci")
+  
+  # Print the results directly
+  cat("Variable:", var, "\n")
+  print(mean_by_subgroup)
+  
+  cat("\n")  # Add a blank line for readability
+}
+
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_dvi", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+```
+
+## RDS Analysis - baseline table2 - Sexual violence
+```{r}
+# For baseline table2 – sexual violence
+# one way to report the % of outcome in each group of another variable is to switch rows and column
+# the p-value that is reported is the one from chi-square test. 
+HIVbyAgeGrwght <- svyCreateTableOne(vars = "binary_sexual_vio", strata="agegroup", data = RDSsvy, addOverall=TRUE)
+print(HIVbyAgeGrwght, showAllLevels = TRUE)
+
+# show the results overall and by subgroups (point + 95%CI)
+svyciprop(~I(binary_sexual_vio=="binary_sexual_vio Pos."), RDSsvy, method="logit") # proportions for any variables
+svyciprop(~I(binary_sexual_vio=="binary_sexual_vio Neg."), RDSsvy, method="logit") # proportions for any variables
+svymean(~binary_sexual_vio, RDSsvy) # mean for any variable, proportions for only binary outcome
+confint(svymean(~binary_sexual_vio, RDSsvy)) # mean for any variable, proportions for only binary outcome
+
+# Use agegroup for example
+svyby(~binary_sexual_vio,~factor(agegroup), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+summary(svytable(~binary_sexual_vio+agegroup, RDSsvy)) # test for differences in proportions of categorical variables
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_sexual_vio", "binary_sexual_vio", "binary_physical_vio", "binary_sexual_vio")
+library(survey)
+
+# RDSsvy is your survey design object
+
+library(survey)
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "female_partner", "male_partner",  
+             "identity_report", "identity", "hiv_final", "netsize_group", "binary_sexual_vio", "binary_sexual_vio", 
+             "binary_physical_vio", "binary_sexual_vio", "binary_stigma", "binary_dvi")
+#delete binary_int
+
+# Loop through each categorical variable and calculate proportions and confidence intervals
+for (var in catVars) {
+  cat("Proportions for binary_sexual_vio by", var, ":\n")
+  
+  # Using svyby to calculate proportions by subgroup
+  prop_by_subgroup <- svyby(~binary_sexual_vio, as.formula(paste("~factor(", var, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype = c("ci"))
+  test_for_differences_by_subgroup <- summary(svytable(as.formula(paste("~binary_sexual_vio + ", var)), RDSsvy))
+  
+  # Print the results
+  print(prop_by_subgroup)
+  print(test_for_differences_by_subgroup)
+  cat("\n") # For readability
+}
+
+# For numerical variables
+numVars <- c("sum_int", "sum_soccoh", "netsize")  # Example numerical variables
+
+# Example categorical variable to subgroup the numerical variables
+catVar <- "binary_sexual_vio"  # Example categorical variable
+
+for (var in numVars) {
+  cat("Statistics for", var, "by", catVar, ":\n")
+  
+  # Calculate mean and confidence intervals across subgroups of the categorical variable
+  mean_by_subgroup <- svyby(as.formula(paste("~", var)), as.formula(paste("~factor(", catVar, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype="ci")
+  
+  # Print the results directly
+  cat("Variable:", var, "\n")
+  print(mean_by_subgroup)
+  
+  cat("\n")  # Add a blank line for readability
+}
+```
+
+# RDS Analysis - 2014
+## RDS Analysis - 2014 table1
+```{r}
+dat4_2 <- dat_1
+CM3 <- apply(CM3, 2, function(x) ifelse(is.na(x), x, paste0("E", x)))
+CM3 <- as.data.frame(CM3)
+names(CM3) <- tolower(names(CM3))
+
+##First step is to make sure all the data are complete for transferring to an RDS dataframe
+##Netsize7: We need this complete
+summary(dat4_2$netsize)
+#one missing netsize that we need to make not missing
+dat4_2$ns_18<-dat4_2$netsize
+dat4_2$ns_18[is.na(dat4_2$netsize)]<-23.43
+dat4_2$ns_18[dat4_2$netsize==0]<-1
+summary(dat4_2$ns_18)
+#Make sure all the coupons are there
+dat4_2$couponid_3 <- dat4_2$couponid 
+summary(dat4_2$couponid_3)
+#We are missing data from coupons so we need to merge that new data. 
+#18 month has an incorrect name for couponID. renaming to match merge file
+dat4_2$i<-1:nrow(dat4_2)
+dat4_18<-merge(CM3, dat4_2, by="couponid_3", all=TRUE)
+#dat_1$couponid
+dat4_18 <- dat4_18[complete.cases(dat4_18$i), ]
+RDS<-dat4_18
+RDS$rec.id <- rid.from.coupons(dat4_18, subject.id='i', subject.coupon='couponid_3', coupon.variables=c("outpon1_3","outpon2_3","outpon3_3"))
+#View(RDS[c("i","rec.id","couponid_3","outpon1_3","outpon2_3","outpon3_3")])
+#NEED TO UPDATE PSE with lower and upper bounds. 
+RDS <- RDS[!is.na(RDS$i), ]
+D_RDS <- as.rds.data.frame(RDS, id='i', recruiter.id='rec.id'
+                           , network.size='ns_18', population.size=c(4883), max.coupons=3
+                           , notes=NULL)
+#View(D_RDS)
+D_RDS_1 <- D_RDS
+
+##RDS specific variables
+D_RDS$seed <- get.seed.id(D_RDS)
+D_RDS$wave <- get.wave(D_RDS)
+D_RDS$target <- get.id(D_RDS)
+D_RDS$source <- get.rid(D_RDS)
+
+#Pretty recruitment by wave plot!
+plot(D_RDS, plot.type='Recruits by wave',stratify.by='age_grp2_18')
+
+#Recruitment tree
+
+D_RDS$seedYN<-0
+D_RDS$seedYN[which(D_RDS$rec.id=="seed")]<-1
+reingold.tilford.plot(D_RDS,vertex.color="seedYN",vertex.size="ns_18",show.legend=FALSE)
+legend("left",legend=c("Seed","Others"),fill=c("lightblue","red"))
+
+#Example of weighted estimates for table 1. NOTE NEED TO CHANGE PSE
+
+agegrp <- RDS.bootstrap.intervals(D_RDS, outcome.variable="agegroup", 
+                                   weight.type="Gile's SS", 
+                                   confidence.level=0.95, number.of.bootstrap.samples=5000, 
+                                   to.factor=TRUE, N=4883, number.ss.samples.per.iteration=1000)
+
+print(agegrp) # RDS-adjusted % and 95%CI
+
+#STEP 1: ADD OUTPON DATA FROM NEW DATASETS FOR BASELINE AND 12 MONTH
+#STEP 2: Assure all data are complete (netsize variable use netsize7)
+#STEP 3: I would split the file into 3 based on wave
+#STEP 3b: Run all crude analysis first. 
+#STEP 4: Build RDS dataframe for each
+#STEP 5: Run table 1 analysis weighted
+
+## Load survey package, so you can make a table for RDS-weighted results
+#install.packages("survey")
+library(survey)
+D_RDS$wghtGSS<-compute.weights(D_RDS, weight.type = c("Gile's SS"), N = 4883)
+
+# set the survey to account for weights
+RDSsvy <- svydesign(ids = ~ i, weights = ~ wghtGSS, nest = TRUE, data = D_RDS)
+
+calculate_and_print_RDS_bootstrap_intervals <- function(data, variables, N, weight_type = "Gile's SS", confidence_level = 0.95, number_of_bootstrap_samples = 5000, number_ss_samples_per_iteration = 1000) {
+  for (variable in variables) {
+    cat("Processing variable:", variable, "\n")
+    result <- RDS.bootstrap.intervals(data, outcome.variable = variable, 
+                                      weight.type = weight_type, 
+                                      confidence.level = confidence_level, 
+                                      number.of.bootstrap.samples = number_of_bootstrap_samples, 
+                                      to.factor = TRUE, N = N, 
+                                      number.ss.samples.per.iteration = number_ss_samples_per_iteration)
+    print(result)
+    cat("\n") # Add a newline for better readability between variables
+  }
+}
+
+variables <- c("agegroup", "binary_int", "demedu2", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio", "dempov", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group")
+
+calculate_and_print_RDS_bootstrap_intervals(D_RDS, variables, N = 4883)
+
+#numerical variables
+bootstrap_CI_with_N <- function(data, var_name, N, stat = "mean", num_samples = 5000, conf_level = 0.95) {
+  # Extract the variable of interest
+  var_data <- data[[var_name]]
+  
+  # Define a function to compute the desired statistic
+  stat_fun <- switch(stat,
+                     mean = mean,
+                     median = median,
+                     sum = sum,
+                     mean) # Default to mean if unrecognized stat
+  
+  # Generate bootstrap samples and compute the statistic for each sample
+  bootstrap_stats <- replicate(num_samples, {
+    sampled_indices <- sample(1:length(var_data), replace = TRUE, size = length(var_data))
+    stat_fun(var_data[sampled_indices], na.rm = TRUE)
+  })
+  
+  # Compute the confidence interval
+  CI_bounds <- quantile(bootstrap_stats, probs = c((1 - conf_level) / 2, 1 - (1 - conf_level) / 2))
+  
+  # Calculate the overall mean of the bootstrap statistics
+  overall_mean <- mean(bootstrap_stats)
+  
+  # Print the mean and confidence interval
+  cat("Mean:", overall_mean, "\n")
+  cat("95% Confidence Interval:", CI_bounds, "\n")
+  
+  # Return the mean and confidence interval
+  return(list(mean = overall_mean, CI = CI_bounds))
+}
+
+set.seed(123) # For reproducibility
+CI_mean_sum_int <- bootstrap_CI_with_N(D_RDS, "sum_soccoh", N = 4883, stat = "mean", num_samples = 5000)
+CI_mean_sum_int <- bootstrap_CI_with_N(D_RDS, "netsize", N = 4883, stat = "mean", num_samples = 5000)
+CI_mean_sum_int <- bootstrap_CI_with_N(D_RDS, "sum_int", N = 4883, stat = "mean", num_samples = 5000)
+```
+
+## RDS Analysis - 2014 table2 - Stigma
+```{r}
+# For 2014 table2 - Stigma
+# one way to report the % of outcome in each group of another variable is to switch rows and column
+# the p-value that is reported is the one from chi-square test. 
+HIVbyAgeGrwght <- svyCreateTableOne(vars = "binary_stigma", strata="agegroup", data = RDSsvy, addOverall=TRUE)
+print(HIVbyAgeGrwght, showAllLevels = TRUE)
+
+# show the results overall and by subgroups (point + 95%CI)
+svyciprop(~I(binary_stigma=="binary_stigma Pos."), RDSsvy, method="logit") # proportions for any variables
+svyciprop(~I(binary_stigma=="binary_stigma Neg."), RDSsvy, method="logit") # proportions for any variables
+svymean(~binary_stigma, RDSsvy) # mean for any variable, proportions for only binary outcome
+confint(svymean(~binary_stigma, RDSsvy)) # mean for any variable, proportions for only binary outcome
+
+# Use agegroup for example
+svyby(~binary_stigma,~factor(agegroup), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+summary(svytable(~binary_stigma+agegroup, RDSsvy)) # test for differences in proportions of categorical variables
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+library(survey)
+# Loop through each categorical variable and calculate proportions and confidence intervals
+for (var in catVars) {
+  cat("Proportions for binary_stigma by", var, ":\n")
+  
+  # Using svyby to calculate proportions by subgroup
+  prop_by_subgroup <- svyby(~binary_stigma, as.formula(paste("~factor(", var, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype = c("ci"))
+  test_for_differences_by_subgroup <- summary(svytable(as.formula(paste("~binary_stigma + ", var)), RDSsvy))
+  
+  # Print the results
+  print(prop_by_subgroup)
+  print(test_for_differences_by_subgroup)
+  cat("\n") # For readability
+}
+
+# For numerical variables
+numVars <- c("sum_int", "sum_soccoh", "netsize")  # Example numerical variables
+
+# Example categorical variable to subgroup the numerical variables
+catVar <- "binary_stigma"  # Example categorical variable
+
+for (var in numVars) {
+  cat("Statistics for", var, "by", catVar, ":\n")
+  
+  # Calculate mean and confidence intervals across subgroups of the categorical variable
+  mean_by_subgroup <- svyby(as.formula(paste("~", var)), as.formula(paste("~factor(", catVar, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype="ci")
+  
+  # Print the results directly
+  cat("Variable:", var, "\n")
+  print(mean_by_subgroup)
+  
+  cat("\n")  # Add a blank line for readability
+}
+```
+
+## RDS Analysis - 2014 table2 - Discrimination
+```{r}
+# For 2014 table2 – discrimination
+# one way to report the % of outcome in each group of another variable is to switch rows and column
+# the p-value that is reported is the one from chi-square test. 
+HIVbyAgeGrwght <- svyCreateTableOne(vars = "binary_dvi", strata="agegroup", data = RDSsvy, addOverall=TRUE)
+print(HIVbyAgeGrwght, showAllLevels = TRUE)
+
+# show the results overall and by subgroups (point + 95%CI)
+svyciprop(~I(binary_dvi=="binary_dvi Pos."), RDSsvy, method="logit") # proportions for any variables
+svyciprop(~I(binary_dvi=="binary_dvi Neg."), RDSsvy, method="logit") # proportions for any variables
+svymean(~binary_dvi, RDSsvy) # mean for any variable, proportions for only binary outcome
+confint(svymean(~binary_dvi, RDSsvy)) # mean for any variable, proportions for only binary outcome
+
+# Use agegroup for example
+svyby(~binary_dvi,~factor(agegroup), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+summary(svytable(~binary_dvi+agegroup, RDSsvy)) # test for differences in proportions of categorical variables
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_dvi", "binary_stigma", "binary_physical_vio", "binary_sexual_vio")
+
+# Loop through each categorical variable and calculate proportions and confidence intervals
+for (var in catVars) {
+  cat("Proportions for binary_dvi by", var, ":\n")
+  
+  # Using svyby to calculate proportions by subgroup
+  prop_by_subgroup <- svyby(~binary_dvi, as.formula(paste("~factor(", var, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype = c("ci"))
+  test_for_differences_by_subgroup <- summary(svytable(as.formula(paste("~binary_dvi + ", var)), RDSsvy))
+  
+  # Print the results
+  print(prop_by_subgroup)
+  print(test_for_differences_by_subgroup)
+  cat("\n") # For readability
+}
+
+# For numerical variables
+numVars <- c("sum_int", "sum_soccoh", "netsize")  # Example numerical variables
+
+# Example categorical variable to subgroup the numerical variables
+catVar <- "binary_dvi"  # Example categorical variable
+
+for (var in numVars) {
+  cat("Statistics for", var, "by", catVar, ":\n")
+  
+  # Calculate mean and confidence intervals across subgroups of the categorical variable
+  mean_by_subgroup <- svyby(as.formula(paste("~", var)), as.formula(paste("~factor(", catVar, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype="ci")
+  
+  # Print the results directly
+  cat("Variable:", var, "\n")
+  print(mean_by_subgroup)
+  
+  cat("\n")  # Add a blank line for readability
+}
+```
+
+## RDS Analysis - 2014 table2 - Sexual violence
+```{r}
+# For 2014 table2 – sexual violence
+# one way to report the % of outcome in each group of another variable is to switch rows and column
+# the p-value that is reported is the one from chi-square test. 
+HIVbyAgeGrwght <- svyCreateTableOne(vars = "binary_sexual_vio", strata="agegroup", data = RDSsvy, addOverall=TRUE)
+print(HIVbyAgeGrwght, showAllLevels = TRUE)
+
+# show the results overall and by subgroups (point + 95%CI)
+svyciprop(~I(binary_sexual_vio=="binary_sexual_vio Pos."), RDSsvy, method="logit") # proportions for any variables
+svyciprop(~I(binary_sexual_vio=="binary_sexual_vio Neg."), RDSsvy, method="logit") # proportions for any variables
+svymean(~binary_sexual_vio, RDSsvy) # mean for any variable, proportions for only binary outcome
+confint(svymean(~binary_sexual_vio, RDSsvy)) # mean for any variable, proportions for only binary outcome
+
+# Use agegroup for example
+svyby(~binary_sexual_vio,~factor(agegroup), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+summary(svytable(~binary_sexual_vio+agegroup, RDSsvy)) # test for differences in proportions of categorical variables
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+library(survey)
+
+# Loop through each categorical variable and calculate proportions and confidence intervals
+for (var in catVars) {
+  cat("Proportions for binary_sexual_vio by", var, ":\n")
+  
+  # Using svyby to calculate proportions by subgroup
+  prop_by_subgroup <- svyby(~binary_sexual_vio, as.formula(paste("~factor(", var, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype = c("ci"))
+  test_for_differences_by_subgroup <- summary(svytable(as.formula(paste("~binary_sexual_vio + ", var)), RDSsvy))
+  
+  # Print the results
+  print(prop_by_subgroup)
+  print(test_for_differences_by_subgroup)
+  cat("\n") # For readability
+}
+
+# For numerical variables
+numVars <- c("sum_int", "sum_soccoh", "netsize")  # Example numerical variables
+
+# Example categorical variable to subgroup the numerical variables
+catVar <- "binary_sexual_vio"  # Example categorical variable
+
+for (var in numVars) {
+  cat("Statistics for", var, "by", catVar, ":\n")
+  
+  # Calculate mean and confidence intervals across subgroups of the categorical variable
+  mean_by_subgroup <- svyby(as.formula(paste("~", var)), as.formula(paste("~factor(", catVar, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype="ci")
+  
+  # Print the results directly
+  cat("Variable:", var, "\n")
+  print(mean_by_subgroup)
+  
+  cat("\n")  # Add a blank line for readability
+}
+```
+
+# RDS Analysis - 2015 
+## RDS Analysis - 2015 table1
+```{r}
+# 2015 table1
+dat4_2 <- dat_2
+##First step is to make sure all the data are complete for transferring to an RDS dataframe
+##Netsize7: We need this complete
+summary(dat4_2$netsize)
+#one missing netsize that we need to make not missing
+dat4_2$ns_18<-dat4_2$netsize
+dat4_2$ns_18[is.na(dat4_2$netsize)]<-22.7
+dat4_2$ns_18[dat4_2$netsize==0]<-1
+dat4_2$netsize_group[dat4_2$netsize_group==2.37741935483871]<-3
+summary(dat4_2$ns_18)
+#Make sure all the coupons are there
+summary(dat4_2$coupon_18)
+#We are missing data from coupons so we need to merge that new data. 
+#18 month has an incorrect name for couponID. renaming to match merge file
+dat4_2$couponid_18<-dat4_2$couponid
+dat4_2$i<-1:nrow(dat4_2)
+
+dat4_18<-merge(dat4_2, CM18, by="couponid_18", all=TRUE)
+#View(dat4_18)
+
+#download all RDS packages
+
+#install.packages("RDS") 
+#install.packages("sspse")
+#install.packages("mcmcplots")
+#install.packages("coda")
+
+library("coda")
+library("RDS") 
+library("sspse")
+library("mcmcplots")
+
+RDS<-dat4_18
+RDS$rec.id <- rid.from.coupons(dat4_18, subject.id='i', subject.coupon='couponid_18', coupon.variables=c("outpon1_18","outpon2_18","outpon3_18"))
+#View(RDS[c("i","rec.id","couponid_18","outpon1_18","outpon2_18","outpon3_18")])
+#NEED TO UPDATE PSE with lower and upper bounds. 
+D_RDS <- as.rds.data.frame(RDS, id='i', recruiter.id='rec.id'
+                           , network.size='ns_18', population.size=c(4883), max.coupons=3
+                           , notes=NULL)
+#View(D_RDS)
+D_RDS_2 <- D_RDS
+
+##RDS specific variables
+D_RDS$seed <- get.seed.id(D_RDS)
+D_RDS$wave <- get.wave(D_RDS)
+D_RDS$target <- get.id(D_RDS)
+D_RDS$source <- get.rid(D_RDS)
+
+#Pretty recruitment by wave plot!
+plot(D_RDS, plot.type='Recruits by wave',stratify.by='age_grp2_18')
+
+#Recruitment tree
+
+D_RDS$seedYN<-0
+D_RDS$seedYN[which(D_RDS$rec.id=="seed")]<-1
+reingold.tilford.plot(D_RDS,vertex.color="seedYN",vertex.size="ns_18",show.legend=FALSE)
+legend("left",legend=c("Seed","Others"),fill=c("lightblue","red"))
+
+#Example of weighted estimates for table 1. NOTE NEED TO CHANGE PSE
+
+agegrp <- RDS.bootstrap.intervals(D_RDS, outcome.variable="agegroup", 
+                                   weight.type="Gile's SS", 
+                                   confidence.level=0.95, number.of.bootstrap.samples=5000, 
+                                   to.factor=TRUE, N=4883, number.ss.samples.per.iteration=1000)
+
+#print(agegrp) # RDS-adjusted % and 95%CI
+
+#STEP 1: ADD OUTPON DATA FROM NEW DATASETS FOR BASELINE AND 12 MONTH
+#STEP 2: Assure all data are complete (netsize variable use netsize7)
+#STEP 3: I would split the file into 3 based on wave
+#STEP 3b: Run all crude analysis first. 
+#STEP 4: Build RDS dataframe for each
+#STEP 5: Run table 1 analysis weighted
+## Load survey package, so you can make a table for RDS-weighted results
+#install.packages("survey")
+
+## Load survey package, so you can make a table for RDS-weighted results
+#install.packages("survey")
+library(survey)
+D_RDS$wghtGSS<-compute.weights(D_RDS, weight.type = c("Gile's SS"), N = 4883)
+
+# set the survey to account for weights
+RDSsvy <- svydesign(ids = ~ i, weights = ~ wghtGSS, nest = TRUE, data = D_RDS)
+
+calculate_and_print_RDS_bootstrap_intervals <- function(data, variables, N, weight_type = "Gile's SS", confidence_level = 0.95, number_of_bootstrap_samples = 5000, number_ss_samples_per_iteration = 1000) {
+  for (variable in variables) {
+    cat("Processing variable:", variable, "\n")
+    result <- RDS.bootstrap.intervals(data, outcome.variable = variable, 
+                                      weight.type = weight_type, 
+                                      confidence.level = confidence_level, 
+                                      number.of.bootstrap.samples = number_of_bootstrap_samples, 
+                                      to.factor = TRUE, N = N, 
+                                      number.ss.samples.per.iteration = number_ss_samples_per_iteration)
+    print(result)
+    cat("\n") # Add a newline for better readability between variables
+  }
+}
+
+variables <- c("agegroup", "binary_int", "demedu2", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio", "dempov", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group")
+
+calculate_and_print_RDS_bootstrap_intervals(D_RDS, variables, N = 4883)
+
+#numerical variables
+bootstrap_CI_with_N <- function(data, var_name, N, stat = "mean", num_samples = 5000, conf_level = 0.95) {
+  # Extract the variable of interest
+  var_data <- data[[var_name]]
+  
+  # Define a function to compute the desired statistic
+  stat_fun <- switch(stat,
+                     mean = mean,
+                     median = median,
+                     sum = sum,
+                     mean) # Default to mean if unrecognized stat
+  
+  # Generate bootstrap samples and compute the statistic for each sample
+  bootstrap_stats <- replicate(num_samples, {
+    sampled_indices <- sample(1:length(var_data), replace = TRUE, size = length(var_data))
+    stat_fun(var_data[sampled_indices], na.rm = TRUE)
+  })
+  
+  # Compute the confidence interval
+  CI_bounds <- quantile(bootstrap_stats, probs = c((1 - conf_level) / 2, 1 - (1 - conf_level) / 2))
+  
+  # Calculate the overall mean of the bootstrap statistics
+  overall_mean <- mean(bootstrap_stats)
+  
+  # Print the mean and confidence interval
+  cat("Mean:", overall_mean, "\n")
+  cat("95% Confidence Interval:", CI_bounds, "\n")
+  
+  # Return the mean and confidence interval
+  return(list(mean = overall_mean, CI = CI_bounds))
+}
+
+set.seed(123) # For reproducibility
+CI_mean_sum_int <- bootstrap_CI_with_N(D_RDS, "sum_soccoh", N = 4883, stat = "mean", num_samples = 5000)
+CI_mean_sum_int <- bootstrap_CI_with_N(D_RDS, "netsize", N = 4883, stat = "mean", num_samples = 5000)
+CI_mean_sum_int <- bootstrap_CI_with_N(D_RDS, "sum_int", N = 4883, stat = "mean", num_samples = 5000)
+```
+
+## RDS Analysis - 2015 table2 - Stigma
+```{r}
+# For 2015 table2 - Stigma
+# one way to report the % of outcome in each group of another variable is to switch rows and column
+# the p-value that is reported is the one from chi-square test. 
+HIVbyAgeGrwght <- svyCreateTableOne(vars = "binary_stigma", strata="agegroup", data = RDSsvy, addOverall=TRUE)
+print(HIVbyAgeGrwght, showAllLevels = TRUE)
+
+# show the results overall and by subgroups (point + 95%CI)
+svyciprop(~I(binary_stigma=="binary_stigma Pos."), RDSsvy, method="logit") # proportions for any variables
+svyciprop(~I(binary_stigma=="binary_stigma Neg."), RDSsvy, method="logit") # proportions for any variables
+svymean(~binary_stigma, RDSsvy) # mean for any variable, proportions for only binary outcome
+confint(svymean(~binary_stigma, RDSsvy)) # mean for any variable, proportions for only binary outcome
+
+# Use agegroup for example
+svyby(~binary_stigma,~factor(agegroup), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+summary(svytable(~binary_stigma+agegroup, RDSsvy)) # test for differences in proportions of categorical variables
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+library(survey)
+
+# Loop through each categorical variable and calculate proportions and confidence intervals
+for (var in catVars) {
+  cat("Proportions for binary_stigma by", var, ":\n")
+  
+  # Using svyby to calculate proportions by subgroup
+  prop_by_subgroup <- svyby(~binary_stigma, as.formula(paste("~factor(", var, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype = c("ci"))
+  test_for_differences_by_subgroup <- summary(svytable(as.formula(paste("~binary_stigma + ", var)), RDSsvy))
+  
+  # Print the results
+  print(prop_by_subgroup)
+  print(test_for_differences_by_subgroup)
+  cat("\n") # For readability
+}
+
+# For numerical variables
+numVars <- c("sum_int", "sum_soccoh", "netsize")  # Example numerical variables
+
+# Example categorical variable to subgroup the numerical variables
+catVar <- "binary_stigma"  # Example categorical variable
+
+for (var in numVars) {
+  cat("Statistics for", var, "by", catVar, ":\n")
+  
+  # Calculate mean and confidence intervals across subgroups of the categorical variable
+  mean_by_subgroup <- svyby(as.formula(paste("~", var)), as.formula(paste("~factor(", catVar, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype="ci")
+  
+  # Print the results directly
+  cat("Variable:", var, "\n")
+  print(mean_by_subgroup)
+  
+  cat("\n")  # Add a blank line for readability
+}
+```
+
+## RDS Analysis - 2015 table2 - Discrimination
+```{r}
+# For 2015 table2 – discrimination
+# one way to report the % of outcome in each group of another variable is to switch rows and column
+# the p-value that is reported is the one from chi-square test. 
+HIVbyAgeGrwght <- svyCreateTableOne(vars = "binary_dvi", strata="agegroup", data = RDSsvy, addOverall=TRUE)
+print(HIVbyAgeGrwght, showAllLevels = TRUE)
+
+# show the results overall and by subgroups (point + 95%CI)
+svyciprop(~I(binary_dvi=="binary_dvi Pos."), RDSsvy, method="logit") # proportions for any variables
+svyciprop(~I(binary_dvi=="binary_dvi Neg."), RDSsvy, method="logit") # proportions for any variables
+svymean(~binary_dvi, RDSsvy) # mean for any variable, proportions for only binary outcome
+confint(svymean(~binary_dvi, RDSsvy)) # mean for any variable, proportions for only binary outcome
+
+# Use agegroup for example
+svyby(~binary_dvi,~factor(agegroup), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+summary(svytable(~binary_dvi+agegroup, RDSsvy)) # test for differences in proportions of categorical variables
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_dvi", "binary_stigma", "binary_physical_vio", "binary_sexual_vio")
+library(survey)
+
+# Loop through each categorical variable and calculate proportions and confidence intervals
+for (var in catVars) {
+  cat("Proportions for binary_dvi by", var, ":\n")
+  
+  # Using svyby to calculate proportions by subgroup
+  prop_by_subgroup <- svyby(~binary_dvi, as.formula(paste("~factor(", var, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype = c("ci"))
+  test_for_differences_by_subgroup <- summary(svytable(as.formula(paste("~binary_dvi + ", var)), RDSsvy))
+  
+  # Print the results
+  print(prop_by_subgroup)
+  print(test_for_differences_by_subgroup)
+  cat("\n") # For readability
+}
+
+# For numerical variables
+numVars <- c("sum_int", "sum_soccoh", "netsize")  # Example numerical variables
+
+# Example categorical variable to subgroup the numerical variables
+catVar <- "binary_dvi"  # Example categorical variable
+
+for (var in numVars) {
+  cat("Statistics for", var, "by", catVar, ":\n")
+  
+  # Calculate mean and confidence intervals across subgroups of the categorical variable
+  mean_by_subgroup <- svyby(as.formula(paste("~", var)), as.formula(paste("~factor(", catVar, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype="ci")
+  
+  # Print the results directly
+  cat("Variable:", var, "\n")
+  print(mean_by_subgroup)
+  
+  cat("\n")  # Add a blank line for readability
+}
+```
+
+## RDS Analysis - 2015 table 2 - Sexual violence
+```{r}
+# For 2015 table 2 – sexual violence
+# one way to report the % of outcome in each group of another variable is to switch rows and column
+# the p-value that is reported is the one from chi-square test. 
+HIVbyAgeGrwght <- svyCreateTableOne(vars = "binary_sexual_vio", strata="agegroup", data = RDSsvy, addOverall=TRUE)
+print(HIVbyAgeGrwght, showAllLevels = TRUE)
+
+# show the results overall and by subgroups (point + 95%CI)
+svyciprop(~I(binary_sexual_vio=="binary_sexual_vio Pos."), RDSsvy, method="logit") # proportions for any variables
+svyciprop(~I(binary_sexual_vio=="binary_sexual_vio Neg."), RDSsvy, method="logit") # proportions for any variables
+svymean(~binary_sexual_vio, RDSsvy) # mean for any variable, proportions for only binary outcome
+confint(svymean(~binary_sexual_vio, RDSsvy)) # mean for any variable, proportions for only binary outcome
+
+# Use agegroup for example
+svyby(~binary_sexual_vio,~factor(agegroup), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+summary(svytable(~binary_sexual_vio+agegroup, RDSsvy)) # test for differences in proportions of categorical variables
+
+# Vector of categorical variables to analyze
+catVars <- c("agegroup", "demedu2", "dempov", "binary_int", "female_partner", "male_partner", "identity_report", "identity", "hiv_final", "netsize_group", "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio")
+library(survey)
+
+# Loop through each categorical variable and calculate proportions and confidence intervals
+for (var in catVars) {
+  cat("Proportions for binary_sexual_vio by", var, ":\n")
+  
+  # Using svyby to calculate proportions by subgroup
+  prop_by_subgroup <- svyby(~binary_sexual_vio, as.formula(paste("~factor(", var, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype = c("ci"))
+  test_for_differences_by_subgroup <- summary(svytable(as.formula(paste("~binary_sexual_vio + ", var)), RDSsvy))
+  
+  # Print the results
+  print(prop_by_subgroup)
+  print(test_for_differences_by_subgroup)
+  cat("\n") # For readability
+}
+
+# For numerical variables
+numVars <- c("sum_int", "sum_soccoh", "netsize")  # Example numerical variables
+
+# Example categorical variable to subgroup the numerical variables
+catVar <- "binary_sexual_vio"  # Example categorical variable
+
+for (var in numVars) {
+  cat("Statistics for", var, "by", catVar, ":\n")
+  
+  # Calculate mean and confidence intervals across subgroups of the categorical variable
+  mean_by_subgroup <- svyby(as.formula(paste("~", var)), as.formula(paste("~factor(", catVar, ")")), 
+                            RDSsvy, svymean, na.rm = TRUE, vartype="ci")
+  
+  # Print the results directly
+  cat("Variable:", var, "\n")
+  print(mean_by_subgroup)
+  
+  cat("\n")  # Add a blank line for readability
+}
+```
+# Plot for intervention variable and outcomes
+
+## RDS Analysis - combined - adjusted proportions
+```{r}
+library(readxl)
+CM3 <- read_xlsx("/Users/junxiaogao/Documents/UCSF/MSM/Outpon data/12 Month Follow up.xlsx")
+CM18 <- read_xlsx("/Users/junxiaogao/Documents/UCSF/MSM/Outpon data/18 Month Follow up.xlsx")
+CM <- read_xlsx("/Users/junxiaogao/Documents/UCSF/MSM/Outpon data/Baseline.xlsx")
+names(CM) <- tolower(names(CM))
+CM3 <- apply(CM3, 2, function(x) ifelse(is.na(x), x, paste0("E", x)))
+CM3 <- as.data.frame(CM3)
+names(CM3) <- tolower(names(CM3))
+
+# Rename variables using mutate
+library(dplyr)
+CM3 <- CM3 %>%
+  rename(couponid = couponid_3,
+         outpon1 = outpon1_3,
+         outpon2 = outpon2_3,
+         outpon3 = outpon3_3
+         ) 
+CM18 <- CM18 %>%
+  rename(couponid = couponid_18,
+         outpon1 = outpon1_18,
+         outpon2 = outpon2_18,
+         outpon3 = outpon3_18
+         ) 
+
+CM_combied <- rbind(CM, CM3)
+CM_combied <- rbind(CM_combied, CM18)
+CM_combied 
+dat4_2 <- dat
+##First step is to make sure all the data are complete for transferring to an RDS dataframe
+##Netsize7: We need this complete
+summary(dat4_2$netsize)
+#one missing netsize that we need to make not missing
+dat4_2$ns_18<-dat4_2$netsize
+dat4_2$ns_18[is.na(dat4_2$netsize)]<-18.97
+dat4_2$ns_18[dat4_2$netsize==0]<-1
+summary(dat4_2$ns_18)
+#Make sure all the coupons are there
+summary(dat4_2$couponid)
+#We are missing data from coupons so we need to merge that new data. 
+#18 month has an incorrect name for couponID. renaming to match merge file
+dat4_2$i<-1:nrow(dat4_2)
+dat4_18<-merge(dat4_2, CM_combied, by="couponid", all=TRUE)
+#View(dat4_18)
+
+#download all RDS packages
+
+#install.packages("RDS") 
+#install.packages("sspse")
+#install.packages("mcmcplots")
+#install.packages("coda")
+
+library("coda")
+library("RDS") 
+library("sspse")
+library("mcmcplots")
+
+RDS<-dat4_18
+RDS$rec.id <- rid.from.coupons(dat4_18, subject.id='i', subject.coupon='couponid', coupon.variables=c("outpon1","outpon2","outpon3"))
+#View(RDS[c("i","rec.id","couponid","outpon1","outpon2","outpon3")])
+#NEED TO UPDATE PSE with lower and upper bounds. 
+RDS <- RDS[!is.na(RDS$i), ]
+D_RDS <- as.rds.data.frame(RDS, id='i', recruiter.id='rec.id'
+                           , network.size='ns_18', population.size=c(4883), max.coupons=3
+                           , notes=NULL)
+#View(D_RDS)
+##RDS specific variables
+D_RDS$seed <- get.seed.id(D_RDS)
+D_RDS$wave <- get.wave(D_RDS)
+D_RDS$target <- get.id(D_RDS)
+D_RDS$source <- get.rid(D_RDS)
+
+#Pretty recruitment by wave plot!
+plot(D_RDS, plot.type='Recruits by wave',stratify.by='age_grp2_18')
+
+#Recruitment tree
+
+D_RDS$seedYN<-0
+D_RDS$seedYN[which(D_RDS$rec.id=="seed")]<-1
+reingold.tilford.plot(D_RDS,vertex.color="seedYN",vertex.size="ns_18",show.legend=FALSE)
+legend("left",legend=c("Seed","Others"),fill=c("lightblue","red"))
+```
+
+## Plots - Crude proportions and Adjusted proportions
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Crude proportion of Stigma
+# Calculating proportions
+proportions <- dat %>%
+  group_by(sum_int) %>%
+  summarise(Proportion_YES = mean(binary_stigma == 1)) %>%
+  ungroup()
+
+# Creating the bar chart
+plot1 <- ggplot(proportions, aes(x = factor(sum_int), y = Proportion_YES, fill = factor(sum_int))) +
+  geom_bar(stat = "identity", color = "skyblue", fill = "skyblue") +
+  labs(title = "Crude Proportions of Stigma by Intervention Levels",
+       x = "Intervention Levels",
+       y = "Proportion of Stigma",
+       fill = "Intervention Level") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) # Centering the title
+
+plot1
+  
+# Crude proportion of Discrimination
+proportions <- dat %>%
+  group_by(sum_int) %>%
+  summarise(Proportion_YES = mean(binary_dvi == 1)) %>%
+  ungroup()
+
+plot2 <- ggplot(proportions, aes(x = factor(sum_int), y = Proportion_YES, fill = factor(sum_int))) +
+  geom_bar(stat = "identity", color = "skyblue", fill = "skyblue") +
+  labs(title = "Crude Proportions of Discrimination by Intervention Levels",
+       x = "Intervention Levels",
+       y = "Proportion of Discrimination",
+       fill = "Intervention Level") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+plot2
+
+# Crude proportion of Sexual violence
+proportions <- dat %>%
+  group_by(sum_int) %>%
+  summarise(Proportion_YES = mean(binary_sexual_vio == 1)) %>%
+  ungroup()
+
+plot3 <- ggplot(proportions, aes(x = factor(sum_int), y = Proportion_YES, fill = factor(sum_int))) +
+  geom_bar(stat = "identity", color = "skyblue", fill = "skyblue") +
+  labs(title = "Crude Proportions of Sexual Violence by Intervention Levels",
+       x = "Intervention Levels",
+       y = "Proportion of Sexual Violence",
+       fill = "Intervention Level") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+plot3
+  
+#   Adjusted proportion of Stigma
+table <- svyby(~binary_stigma,~factor(sum_int), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+table
+
+plot4 <- ggplot(table, aes(x = factor(`factor(sum_int)`), y = binary_stigma, fill = factor(binary_stigma))) +
+  geom_bar(stat = "identity", color = "skyblue", fill = "skyblue") +
+  labs(title = "Adjusted Proportions of Stigma by Intervention Levels",
+       x = "Intervention Levels",
+       y = "Proportion of Stigma",
+       fill = "Binary Stigma") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+print(plot4)
+
+#   Adjusted proportion of Discrimination
+table <- svyby(~binary_dvi,~factor(sum_int), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+#table
+
+plot5 <- ggplot(table, aes(x = factor(`factor(sum_int)`), y = binary_dvi, fill = factor(binary_dvi))) +
+  geom_bar(stat = "identity", color = "skyblue", fill = "skyblue") +
+  labs(title = "Adjusted Proportions of Discrimination by Intervention Levels",
+       x = "Intervention Levels",
+       y = "Proportion of Discrimination",
+       fill = "Binary Discrimination") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+print(plot5)
+
+#   Adjusted proportion of Sexual violence
+table <- svyby(~binary_sexual_vio,~factor(sum_int), RDSsvy, svymean, vartype=c("ci")) # proportions for only binary outcome
+table
+
+plot6 <- ggplot(table, aes(x = factor(`factor(sum_int)`), y = binary_sexual_vio, fill = factor(binary_sexual_vio))) +
+  geom_bar(stat = "identity", color = "skyblue", fill = "skyblue") +
+  labs(title = "Adjusted Proportions of Sexual Violence by Intervention Levels",
+       x = "Intervention Levels",
+       y = "Proportion of Sexual Violence",
+       fill = "Binary Sexual Violence") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+print(plot6)
+```
+
+# Logistic regression models - Best model for outcomes - time as exposure
+## Discrimination
+```{r}
+#install.packages("blorr")
+library(blorr)
+dat$time <- as.factor(dat$time)
+
+# install.packages("glmnet")
+library(glmnet)
+
+# Prepare the predictor matrix including the variables of interest
+x <- model.matrix(binary_dvi ~ time + binary_stigma + sum_soccoh + netsize + identity_report + identity + binary_physical_vio + binary_sexual_vio + dempov + female_partner + male_partner + netsize_group - 1, data = dat)
+#x <- model.matrix(binary_stigma ~ time + binary_sexual_vio + identity + binary_stigma + binary_physical_vio + dempov + female_partner + male_partner + netsize_group + sum_soccoh + agegroup  + binary_int  + sum_int + netsize - 1, data = dat)
+# Prepare the response variable vector
+y <- dat$binary_dvi
+
+# Fit the LASSO model
+lasso_model <- glmnet(x, y, family = "binomial", alpha = 1)
+
+# Optionally, use cross-validation to find the optimal lambda value
+cv_lasso <- cv.glmnet(x, y, family = "binomial", alpha = 1)
+
+# Extract the optimal lambda value
+optimal_lambda <- cv_lasso$lambda.min
+
+# Fit the LASSO model using the optimal lambda value
+optimal_lasso_model <- glmnet(x, y, family = "binomial", alpha = 1, lambda = optimal_lambda)
+
+# Display coefficients for the optimal model
+coef(optimal_lasso_model)
+
+# according to results of LASSO regression, fit logitic regression models
+#outcome <- dat$binary_dvi
+#variables <- c("binary_stigma", "binary_physical_vio", "binary_sexual_vio", "dempov", "male_partner", "identity_report", "identity", "sum_soccoh", "netsize", "netsize_group")
+
+#for (var in variables) {
+#    formula <- as.formula(paste("outcome ~ time + dempov + identity + netsize_group + #binary_stigma + ", var))
+#    model <- glm(formula, data = dat, family = binomial())
+#    print(summary(model))
+#}
+
+# Crude OR
+glm_dvi <- glm(binary_dvi ~ time, data = dat, family = binomial())
+summary_glm <- summary(glm_dvi)
+summary_glm 
+coefficients <- summary_glm$coefficients[, "Estimate"]
+odds_ratios <- round(exp(coefficients), 2)
+odds_ratios
+blr_model_fit_stats(glm_dvi)
+blr_test_hosmer_lemeshow(glm_dvi)
+standard_errors <- summary_glm$coefficients[, "Std. Error"]
+conf_intervals <- confint(glm_dvi)
+odds_ratio_intervals <- exp(conf_intervals)
+rounded_intervals <- round(odds_ratio_intervals, 2)
+odds_ratios
+rounded_intervals
+
+# Adjusted OR
+glm_dvi <- glm(binary_dvi ~ time + dempov + identity + netsize_group + binary_stigma +binary_physical_vio, data = dat, family = binomial())
+summary_glm <- summary(glm_dvi)
+summary_glm 
+coefficients <- summary_glm$coefficients[, "Estimate"]
+odds_ratios <- round(exp(coefficients), 2)
+odds_ratios
+blr_model_fit_stats(glm_dvi)
+blr_test_hosmer_lemeshow(glm_dvi) # A high p-value (usually >0.05) in the Hosmer-Lemeshow test indicates a good fit. 
+standard_errors <- summary_glm$coefficients[, "Std. Error"]
+conf_intervals <- confint(glm_dvi)
+odds_ratio_intervals <- exp(conf_intervals)
+rounded_intervals <- round(odds_ratio_intervals, 2)
+odds_ratios
+rounded_intervals
+```
+
+## Stigma
+```{r}
+# Fit the LASSO model - select variables
+x <- model.matrix(binary_stigma ~ time + binary_dvi + identity_report + identity + binary_dvi + binary_physical_vio + binary_sexual_vio + dempov + female_partner + male_partner + netsize_group - 1, data = dat)
+#x <- model.matrix(binary_stigma ~ time + binary_dvi + identity + binary_sexual_vio + binary_physical_vio + dempov + female_partner + male_partner + netsize_group + sum_soccoh + agegroup  + binary_int  + sum_int + netsize - 1, data = dat)
+y <- dat$binary_stigma
+lasso_model <- glmnet(x, y, family = "binomial", alpha = 1)
+cv_lasso <- cv.glmnet(x, y, family = "binomial", alpha = 1)
+optimal_lambda <- cv_lasso$lambda.min
+optimal_lasso_model <- glmnet(x, y, family = "binomial", alpha = 1, lambda = optimal_lambda)
+coef(optimal_lasso_model)
+
+# Fit the logitic regression model
+#outcome <- dat$binary_stigma
+#variables <- c("binary_dvi", "binary_physical_vio", "binary_sexual_vio", "identity")
+
+#for (var in variables) {
+#    formula <- as.formula(paste("outcome ~ time + identity + binary_dvi + ", var))
+#    model <- glm(formula, data = dat, family = binomial())
+#    print(summary(model))
+#}
+
+# Crude OR
+glm_stigma <- glm(binary_stigma ~ time, data = dat, family = binomial())
+summary_glm <- summary(glm_stigma)
+summary_glm 
+coefficients <- summary_glm$coefficients[, "Estimate"]
+odds_ratios <- round(exp(coefficients), 2)
+blr_model_fit_stats(glm_stigma)
+blr_test_hosmer_lemeshow(glm_stigma)
+standard_errors <- summary_glm$coefficients[, "Std. Error"]
+conf_intervals <- confint(glm_stigma)
+odds_ratio_intervals <- exp(conf_intervals)
+rounded_intervals <- round(odds_ratio_intervals, 2)
+odds_ratios
+rounded_intervals
+
+# Adjusted OR
+glm_stigma <- glm(binary_stigma ~ time + identity + binary_dvi, data = dat, family = binomial())
+summary_glm <- summary(glm_stigma)
+summary_glm 
+coefficients <- summary_glm$coefficients[, "Estimate"]
+odds_ratios <- round(exp(coefficients), 2)
+blr_model_fit_stats(glm_stigma)
+blr_test_hosmer_lemeshow(glm_stigma)
+standard_errors <- summary_glm$coefficients[, "Std. Error"]
+conf_intervals <- confint(glm_stigma)
+odds_ratio_intervals <- exp(conf_intervals)
+rounded_intervals <- round(odds_ratio_intervals, 2)
+odds_ratios
+rounded_intervals
+```
+
+## Sexual violence
+```{r}
+dat$sum_int <- as.numeric(dat$sum_int) 
+# Fit the LASSO model - select variables
+x <- model.matrix(binary_sexual_vio ~ time + binary_dvi + identity + identity_report + binary_stigma + binary_physical_vio + dempov + female_partner + male_partner + netsize_group + sum_soccoh - 1, data = dat)
+# x <- model.matrix(binary_sexual_vio ~ time + binary_dvi + identity + binary_stigma + binary_physical_vio + dempov + female_partner + male_partner + netsize_group + sum_soccoh + agegroup  + binary_int  + sum_int + netsize - 1, data = dat)
+y <- dat$binary_sexual_vio
+lasso_model <- glmnet(x, y, family = "binomial", alpha = 1)
+cv_lasso <- cv.glmnet(x, y, family = "binomial", alpha = 1)
+optimal_lambda <- cv_lasso$lambda.min
+optimal_lasso_model <- glmnet(x, y, family = "binomial", alpha = 1, lambda = optimal_lambda)
+coef(optimal_lasso_model)
+
+# Fit the logistic regeression model
+outcome <- dat$binary_sexual_vio
+variables <- c("binary_stigma", "binary_dvi", "identity", "binary_physical_vio", "female_partner", "male_partner",  "identity_report", "identity", "sum_soccoh")
+
+for (var in variables) {
+    formula <- as.formula(paste("outcome ~ time + sum_soccoh + ", var))
+    model <- glm(formula, data = dat, family = binomial())
+    print(summary(model))
+}
+
+# Crude OR
+glm_sexual_vio <- glm(binary_sexual_vio ~ time, data = dat, family = binomial())
+summary_glm <- summary(glm_sexual_vio)
+summary_glm 
+coefficients <- summary_glm$coefficients[, "Estimate"]
+odds_ratios <- round(exp(coefficients), 2)
+blr_model_fit_stats(glm_sexual_vio)
+blr_test_hosmer_lemeshow(glm_sexual_vio)
+standard_errors <- summary_glm$coefficients[, "Std. Error"]
+conf_intervals <- confint(glm_sexual_vio)
+odds_ratio_intervals <- exp(conf_intervals)
+rounded_intervals <- round(odds_ratio_intervals, 2)
+odds_ratios
+rounded_intervals
+
+# Adjusted OR
+glm_sexual_vio <- glm(binary_sexual_vio ~ time + sum_soccoh, data = dat, family = binomial())
+summary_glm <- summary(glm_sexual_vio)
+summary_glm 
+coefficients <- summary_glm$coefficients[, "Estimate"]
+odds_ratios <- round(exp(coefficients), 2)
+odds_ratios
+blr_model_fit_stats(glm_sexual_vio)
+blr_test_hosmer_lemeshow(glm_sexual_vio)
+standard_errors <- summary_glm$coefficients[, "Std. Error"]
+conf_intervals <- confint(glm_sexual_vio)
+odds_ratio_intervals <- exp(conf_intervals)
+rounded_intervals <- round(odds_ratio_intervals, 2)
+odds_ratios
+rounded_intervals
+
+# According to the corellations between variables and time
+# non-significant: "agegroup", "demedu2", "demjob", "art"
+# significant: "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_sexual_vio", "binary_vio", "binary_int", "mgroupint", "coregroupint", "dempov", "female_partner", "male_partner", "identity_report", "identity", "identity", "hiv_final", "netsize_group", "auditscore"
+
+# According to correlations between variables and outcomes
+# Stigma
+#non-significant: "intscore_mul", "coregroupint", "hiv_final", "sum_soccoh", "netsize"
+#delete "mgroup_int"
+#significant: "binary_dvi", "binary_physical_vio", "binary_sexual_vio", "binary_vio", "binary_int", "dempov", "female_partner", "male_partner", "hivknowscore", "identity_report", "identity", "netsize_group", "auditscore"
+
+# Discrimination
+#non-significant: "intscore_mul", "coregroupint"
+#significant: "binary_stigma", "binary_physical_vio", "binary_sexual_vio", "binary_vio", "binary_int", "dempov", "female_partner", "male_partner", "hivknowscore", "identity_report", "identity", "sum_soccoh", "netsize", "netsize_group", "auditscore"
+
+# Sexual violence
+#non-significant: "coregroupint", "identity", "netsize"
+#significant: "binary_stigma", "binary_dvi", "binary_physical_vio", "binary_vio", "intscore_mul", "binary_int", "dempov", "female_partner", "male_partner", "hivknowscore", "identity_report", "identity", "sum_soccoh", "netsize_group", "auditscore"
+x <- model.matrix(binary_sexual_vio ~ time + binary_dvi + identity + binary_stigma + binary_physical_vio + dempov + female_partner + male_partner + netsize_group + sum_soccoh + agegroup + binary_int + sum_int + hiv_final + netsize - 1, data = dat)
+```
